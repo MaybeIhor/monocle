@@ -88,7 +88,7 @@ namespace Image_View
                     else
                     {
                         g.InterpolationMode = InterpolationMode.Bicubic;
-                        g.CompositingQuality = CompositingQuality.Default;
+                        g.CompositingQuality = CompositingQuality.HighSpeed;
                         g.SmoothingMode = SmoothingMode.HighSpeed;
                     }
 
@@ -185,10 +185,7 @@ namespace Image_View
                     g.PixelOffsetMode = PixelOffsetMode.Half;
                     g.CompositingMode = CompositingMode.SourceCopy;
                     
-                    g.DrawImage(Image,
-                        new Rectangle(0, 0, w, h),
-                        cropRect,
-                        GraphicsUnit.Pixel);
+                    g.DrawImage(Image, new Rectangle(0, 0, w, h), cropRect, GraphicsUnit.Pixel);
                 }
 
                 Image?.Dispose();

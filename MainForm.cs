@@ -155,8 +155,9 @@ namespace Image_View
             if (pictureBox.Image != null)
             {
                 originalImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                pictureBox.Image?.Dispose();
-                pictureBox.Image = (Image)originalImage.Clone();
+                pictureBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                pictureBox.Invalidate();
+                pictureBox.InvalidateCache();
             }
         }
 
@@ -165,8 +166,9 @@ namespace Image_View
             if (pictureBox.Image != null)
             {
                 originalImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                pictureBox.Image?.Dispose();
-                pictureBox.Image = (Image)originalImage.Clone();
+                pictureBox.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                pictureBox.Invalidate();
+                pictureBox.InvalidateCache();
             }
         }
 
