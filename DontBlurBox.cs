@@ -47,16 +47,23 @@ namespace Image_View
             scale = Math.Min((double)Width / Image.Width, (double)Height / Image.Height);
             int w = (int)(Image.Width * scale);
             int h = (int)(Image.Height * scale);
-            imageRect = new Rectangle((Width - w) / 2, (Height - h) / 2, w, h);
+            imageRect = new Rectangle((Width - w) >> 1, (Height - h) >> 1, w, h);
         }
 
         private Point ClampToImageBounds(Point pt)
         {
-            return new Point(
-                Math.Max(imageRect.Left, Math.Min(pt.X, imageRect.Right)),
-                Math.Max(imageRect.Top, Math.Min(pt.Y, imageRect.Bottom))
-            );
+            int x = pt.X;
+            int y = pt.Y;
+
+            if (x < imageRect.Left) x = imageRect.Left;
+            else if (x > imageRect.Right) x = imageRect.Right;
+
+            if (y < imageRect.Top) y = imageRect.Top;
+            else if (y > imageRect.Bottom) y = imageRect.Bottom;
+
+            return new Point(x, y);
         }
+
 
         protected override void OnResize(EventArgs e)
         {
@@ -145,7 +152,7 @@ namespace Image_View
 
             Cursor.Current = Cursors.Default;
             isDown = false;
-
+            
             if (!p2.IsEmpty)
             {
                 int w = Math.Abs(p1.X - p2.X);
@@ -160,20 +167,26 @@ namespace Image_View
 
         private void Crop()
         {
-            double x1 = (p1.X - imageRect.X) / scale;
-            double y1 = (p1.Y - imageRect.Y) / scale;
-            double x2 = (p2.X - imageRect.X) / scale;
-            double y2 = (p2.Y - imageRect.Y) / scale;
+            double invScale = 1.0 / scale;
+            double x1 = (p1.X - imageRect.X) * invScale;
+            double y1 = (p1.Y - imageRect.Y) * invScale;
+            double x2 = (p2.X - imageRect.X) * invScale;
+            double y2 = (p2.Y - imageRect.Y) * invScale;
 
-            int w = (int)Math.Abs(x1 - x2);
-            int h = (int)Math.Abs(y1 - y2);
+            double minX = Math.Min(x1, x2);
+            double minY = Math.Min(y1, y2);
+            double maxX = Math.Max(x1, x2);
+            double maxY = Math.Max(y1, y2);
+
+            int w = (int)(maxX - minX);
+            int h = (int)(maxY - minY);
 
             if (h != Image.Height) h++;
             if (w != Image.Width) w++;
 
             if (w < 6 || h < 6) return;
 
-            var cropRect = new Rectangle((int)Math.Min(x1, x2), (int)Math.Min(y1, y2), w, h);
+            var cropRect = new Rectangle((int)minX, (int)minY, w, h);
 
             try
             {
@@ -188,9 +201,9 @@ namespace Image_View
                     g.DrawImage(Image, new Rectangle(0, 0, w, h), cropRect, GraphicsUnit.Pixel);
                 }
 
-                Image?.Dispose();
+                Image oldImage = Image;
                 Image = croppedImage;
-
+                oldImage?.Dispose();
             }
             catch {}
         }

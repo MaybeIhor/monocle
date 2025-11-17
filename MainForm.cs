@@ -11,6 +11,7 @@ namespace Image_View
     public partial class form : Form
     {
         private Image originalImage;
+        private string currentFileName;
         private bool dark;
 
         [System.Runtime.InteropServices.DllImport("dwmapi.dll", PreserveSig = true)]
@@ -61,20 +62,23 @@ namespace Image_View
 
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                using (Image tempImage = Image.FromStream(fs))
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 8192))
+                using (Image tempImage = Image.FromStream(fs, false, false))
                 {
                     PixelFormat format = HasTransparency(tempImage) ? PixelFormat.Format32bppArgb : PixelFormat.Format24bppRgb;
 
                     originalImage = new Bitmap(tempImage.Width, tempImage.Height, format);
                     using (Graphics g = Graphics.FromImage(originalImage))
                     {
+                        g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                         g.DrawImage(tempImage, 0, 0, tempImage.Width, tempImage.Height);
                     }
                 }
 
                 pictureBox.Image = (Image)originalImage.Clone();
-                UpdateTitle(Path.GetFileName(path));
+                currentFileName = Path.GetFileName(path);
+                UpdateTitle();
                 saveButton.Enabled = true;
                 printButton.Enabled = true;
             }
@@ -95,18 +99,9 @@ namespace Image_View
 
             return false;
         }
-
-        private void UpdateTitle(string fileName = null)
+        private void UpdateTitle()
         {
-            if (originalImage != null)
-            {
-                string name = fileName ?? "Monocle";
-                Text = $"{name}   {originalImage.Width} x {originalImage.Height}";
-            }
-            else
-            {
-                Text = "Monocle";
-            }
+            Text = originalImage != null? $"{currentFileName ?? "Untitled.png"}   {originalImage.Width} x {originalImage.Height}": "Monocle";
         }
 
         private void DisposeImages()
@@ -190,6 +185,7 @@ namespace Image_View
         {
             if (originalImage != null)
             {
+                pictureBox.Image?.Dispose();
                 pictureBox.Image = (Image)originalImage.Clone();
             }
         }
@@ -224,10 +220,11 @@ namespace Image_View
 
                         if (ext == ".jpg" || ext == ".jpeg")
                         {
-                            var encoder = GetEncoder(ImageFormat.Jpeg);
-                            var encoderParams = new EncoderParameters(1);
-                            encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 95L);
-                            pictureBox.Image.Save(dialog.FileName, encoder, encoderParams);
+                            using (var encoderParams = new EncoderParameters(1))
+                            {
+                                encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 95L);
+                                pictureBox.Image.Save(dialog.FileName, GetEncoder(ImageFormat.Jpeg), encoderParams);
+                            }
                         }
                         else if (ext == ".bmp")
                         {
@@ -242,7 +239,7 @@ namespace Image_View
                 }
             }
         }
-
+     
         private ImageCodecInfo GetEncoder(ImageFormat format)
         {
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
@@ -279,11 +276,14 @@ namespace Image_View
                 originalImage = new Bitmap(clipboardImage.Width, clipboardImage.Height, format);
                 using (Graphics g = Graphics.FromImage(originalImage))
                 {
+                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                     g.DrawImage(clipboardImage, 0, 0, clipboardImage.Width, clipboardImage.Height);
                 }
             }
 
             pictureBox.Image = (Image)originalImage.Clone();
+            currentFileName = null;
             UpdateTitle();
             saveButton.Enabled = true;
             printButton.Enabled = true;
