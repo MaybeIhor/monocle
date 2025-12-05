@@ -101,7 +101,7 @@ namespace Image_View
         }
         private void UpdateTitle()
         {
-            Text = originalImage != null? $"{currentFileName ?? "Untitled.png"}   {originalImage.Width} x {originalImage.Height}": "Monocle";
+            Text = originalImage != null? $"{originalImage.Width} x {originalImage.Height}   {currentFileName ?? "Untitled.png"}": "Monocle";
         }
 
         private void DisposeImages()
