@@ -238,6 +238,7 @@ namespace Image_View
                     g.DrawImage(clipboardImage, 0, 0, clipboardImage.Width, clipboardImage.Height);
                 }
                 pictureBox.Image = temp;
+                pictureBox.ResetCrop();
                 currentFileName = null;
                 UpdateTitle();
             }
