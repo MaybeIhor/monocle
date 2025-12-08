@@ -328,6 +328,8 @@ namespace Image_View
 
         private void PictureBox_MouseUp(object sender, MouseEventArgs e)
         {
+            if (pictureBox.Image == null) return;
+
             UpdateTitle();
         }
 
