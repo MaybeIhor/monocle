@@ -17,6 +17,10 @@ namespace Image_View
         private readonly Timer resizeTimer;
         private bool isResizing;
         public bool isGridding;
+        public bool isFramed;
+
+        private static readonly SolidBrush overlayBrush = new SolidBrush(Color.FromArgb(155, 0, 0, 0));
+        private static readonly Pen crossPen = new Pen(Color.FromArgb(155, 155, 155, 155), 1);
 
         public DontBlurBox()
         {
@@ -66,42 +70,35 @@ namespace Image_View
         public void Crop90()
         {
             if (!crop.HasValue || Image == null) return;
-
-            Rectangle c = crop.Value;
+            var c = crop.Value;
             crop = new Rectangle(Image.Width - c.Y - c.Height, c.X, c.Height, c.Width);
         }
 
         public void Crop270()
         {
             if (!crop.HasValue || Image == null) return;
-
-            Rectangle c = crop.Value;
+            var c = crop.Value;
             crop = new Rectangle(c.Y, Image.Height - c.X - c.Width, c.Height, c.Width);
         }
 
         public void CropMirror()
         {
             if (!crop.HasValue || Image == null) return;
-
-            Rectangle c = crop.Value;
+            var c = crop.Value;
             crop = new Rectangle(Image.Width - c.X - c.Width, c.Y, c.Width, c.Height);
         }
 
         public Image GetVisible()
         {
-            Rectangle sourceRect = crop ?? new Rectangle(0, 0, Image.Width, Image.Height);
-            Bitmap croppedImage = new Bitmap(sourceRect.Width, sourceRect.Height, Image.PixelFormat);
+            var sourceRect = crop ?? new Rectangle(0, 0, Image.Width, Image.Height);
+            var croppedImage = new Bitmap(sourceRect.Width, sourceRect.Height, Image.PixelFormat);
 
-            using (Graphics g = Graphics.FromImage(croppedImage))
+            using (var g = Graphics.FromImage(croppedImage))
             {
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighQuality;
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                g.DrawImage(Image,
-                    new Rectangle(0, 0, sourceRect.Width, sourceRect.Height),
-                    sourceRect,
-                    GraphicsUnit.Pixel);
+                g.DrawImage(Image, new Rectangle(0, 0, sourceRect.Width, sourceRect.Height), sourceRect, GraphicsUnit.Pixel);
             }
             return croppedImage;
         }
@@ -124,8 +121,13 @@ namespace Image_View
                 h = Height;
                 w = (int)(Height * imgAspect);
             }
+
             imageRect = new Rectangle((Width - w) / 2, (Height - h) / 2, w, h);
-            scale = crop.HasValue ? Math.Min((double)w / crop.Value.Width, (double)h / crop.Value.Height) : Math.Min((double)w / Image.Width, (double)h / Image.Height);
+
+            if (crop.HasValue)
+                scale = Math.Min((double)w / crop.Value.Width, (double)h / crop.Value.Height);
+            else
+                scale = Math.Min((double)w / Image.Width, (double)h / Image.Height);
         }
 
         private Point ClampToImage(Point pt) => new Point(
@@ -141,34 +143,33 @@ namespace Image_View
             Invalidate();
         }
 
-        private static readonly SolidBrush overlayBrush = new SolidBrush(Color.FromArgb(155, 0, 0, 0));
-        private static readonly Pen crossPen = new Pen(Color.FromArgb(155, 155, 155, 155), 1);
-
         private void DrawGrid(Graphics g)
         {
             if (!isGridding || Image == null) return;
 
-            int left = imageRect.Left;
-            int right = imageRect.Right;
-            int top = imageRect.Top;
-            int bottom = imageRect.Bottom;
-            int width = imageRect.Width;
-            int height = imageRect.Height;
+            int left = imageRect.Left, right = imageRect.Right;
+            int top = imageRect.Top, bottom = imageRect.Bottom;
+            int width = imageRect.Width, height = imageRect.Height;
 
             int centerX = left + width / 2;
             int centerY = top + height / 2;
+
             g.DrawLine(crossPen, centerX, top, centerX, bottom);
             g.DrawLine(crossPen, left, centerY, right, centerY);
 
-            int quarterX1 = left + width / 4;
-            int quarterX2 = left + 3 * width / 4;
-            int quarterY1 = top + height / 4;
-            int quarterY2 = top + 3 * height / 4;
+            int quarterX1 = left + width / 4, quarterX2 = left + 3 * width / 4;
+            int quarterY1 = top + height / 4, quarterY2 = top + 3 * height / 4;
 
             g.DrawLine(crossPen, quarterX1, top, quarterX1, bottom);
             g.DrawLine(crossPen, quarterX2, top, quarterX2, bottom);
             g.DrawLine(crossPen, left, quarterY1, right, quarterY1);
             g.DrawLine(crossPen, left, quarterY2, right, quarterY2);
+        }
+
+        private void DrawFrame(Graphics g)
+        {
+            if (isFramed && Image != null)
+                g.DrawRectangle(crossPen, imageRect.X - 1, imageRect.Y - 1, imageRect.Width + 1, imageRect.Height + 1);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -187,7 +188,8 @@ namespace Image_View
                     g.Clear(BackColor);
                     g.PixelOffsetMode = PixelOffsetMode.Half;
 
-                    bool useFastMode = isResizing || (Image.Width < 512 && Image.Height < 512) || (crop.HasValue && crop.Value.Width < 512 && crop.Value.Height < 512);
+                    int dimension = crop?.Width ?? Image.Width;
+                    bool useFastMode = isResizing || dimension < 512 || (crop.HasValue && crop.Value.Height < 512);
 
                     g.InterpolationMode = useFastMode ? InterpolationMode.NearestNeighbor : InterpolationMode.HighQualityBicubic;
                     g.CompositingQuality = useFastMode ? CompositingQuality.HighSpeed : CompositingQuality.HighQuality;
@@ -200,16 +202,22 @@ namespace Image_View
             }
 
             e.Graphics.DrawImageUnscaled(cachedImage, 0, 0);
+            DrawFrame(e.Graphics);
             DrawGrid(e.Graphics);
 
             if (isDown && !p2.IsEmpty)
             {
-                var rect = new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p1.X - p2.X), Math.Abs(p1.Y - p2.Y));
+                var rect = new Rectangle(
+                    Math.Min(p1.X, p2.X),
+                    Math.Min(p1.Y, p2.Y),
+                    Math.Abs(p1.X - p2.X),
+                    Math.Abs(p1.Y - p2.Y));
 
-                Region region = new Region(imageRect);
-                region.Exclude(rect);
-                e.Graphics.FillRegion(overlayBrush, region);
-                region.Dispose();
+                using (var region = new Region(imageRect))
+                {
+                    region.Exclude(rect);
+                    e.Graphics.FillRegion(overlayBrush, region);
+                }
                 Cursor.Current = Cursors.Hand;
             }
         }
@@ -222,7 +230,8 @@ namespace Image_View
                 return;
             }
 
-            int minDim = crop.HasValue ? Math.Min(crop.Value.Width, crop.Value.Height) : Math.Min(Image.Width, Image.Height);
+            int minDim = crop?.Width ?? Image.Width;
+            minDim = Math.Min(minDim, crop?.Height ?? Image.Height);
 
             if (minDim <= 6)
             {
@@ -243,17 +252,18 @@ namespace Image_View
             int snappedPixelX = (int)Math.Floor(pixelX);
             int snappedPixelY = (int)Math.Floor(pixelY);
 
-            int screenX = imageRect.X + (int)Math.Round(snappedPixelX * scale);
-            int screenY = imageRect.Y + (int)Math.Round(snappedPixelY * scale);
-
-            return new Point(screenX, screenY);
+            return new Point(
+                imageRect.X + (int)Math.Round(snappedPixelX * scale),
+                imageRect.Y + (int)Math.Round(snappedPixelY * scale));
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDown || Image == null) return;
-            p2 = ClampToImage(e.Location);
-            Invalidate();
+            if (isDown && Image != null)
+            {
+                p2 = ClampToImage(e.Location);
+                Invalidate();
+            }
         }
 
         private void OnMouseUp(object sender, MouseEventArgs e)
