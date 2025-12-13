@@ -314,7 +314,7 @@
             this.MinimumSize = new System.Drawing.Size(318, 275);
             this.Name = "form";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "Monocle";
+            this.Text = "Lorgnette";
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);

@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.widthLabel = new System.Windows.Forms.ToolStripLabel();
+            this.widthBox = new System.Windows.Forms.ToolStripTextBox();
+            this.heightLabel = new System.Windows.Forms.ToolStripLabel();
+            this.heightBox = new System.Windows.Forms.ToolStripTextBox();
             this.smoothButton = new System.Windows.Forms.ToolStripButton();
             this.okButton = new System.Windows.Forms.ToolStripButton();
             this.cancelButton = new System.Windows.Forms.ToolStripButton();
-            this.widthBox = new System.Windows.Forms.ToolStripTextBox();
-            this.heightBox = new System.Windows.Forms.ToolStripTextBox();
-            this.widthLabel = new System.Windows.Forms.ToolStripLabel();
-            this.heightLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,6 +67,46 @@
             this.toolStrip.ShowItemToolTips = false;
             this.toolStrip.Size = new System.Drawing.Size(164, 122);
             this.toolStrip.TabIndex = 3;
+            // 
+            // widthLabel
+            // 
+            this.widthLabel.AutoSize = false;
+            this.widthLabel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.widthLabel.Margin = new System.Windows.Forms.Padding(5, 5, 5, 0);
+            this.widthLabel.Name = "widthLabel";
+            this.widthLabel.Size = new System.Drawing.Size(23, 23);
+            this.widthLabel.Text = "W";
+            this.widthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // widthBox
+            // 
+            this.widthBox.AutoSize = false;
+            this.widthBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.widthBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.widthBox.Margin = new System.Windows.Forms.Padding(51, 5, 5, 0);
+            this.widthBox.Name = "widthBox";
+            this.widthBox.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.widthBox.Size = new System.Drawing.Size(75, 23);
+            // 
+            // heightLabel
+            // 
+            this.heightLabel.AutoSize = false;
+            this.heightLabel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.heightLabel.Margin = new System.Windows.Forms.Padding(5, 5, 5, 0);
+            this.heightLabel.Name = "heightLabel";
+            this.heightLabel.Size = new System.Drawing.Size(23, 23);
+            this.heightLabel.Text = "H";
+            this.heightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // heightBox
+            // 
+            this.heightBox.AutoSize = false;
+            this.heightBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.heightBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.heightBox.Margin = new System.Windows.Forms.Padding(51, 5, 5, 0);
+            this.heightBox.Name = "heightBox";
+            this.heightBox.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.heightBox.Size = new System.Drawing.Size(75, 23);
             // 
             // smoothButton
             // 
@@ -112,46 +152,6 @@
             this.cancelButton.Size = new System.Drawing.Size(81, 29);
             this.cancelButton.Text = "Cancel";
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-            // 
-            // widthBox
-            // 
-            this.widthBox.AutoSize = false;
-            this.widthBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.widthBox.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.widthBox.Margin = new System.Windows.Forms.Padding(51, 5, 5, 0);
-            this.widthBox.Name = "widthBox";
-            this.widthBox.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.widthBox.Size = new System.Drawing.Size(75, 23);
-            // 
-            // heightBox
-            // 
-            this.heightBox.AutoSize = false;
-            this.heightBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.heightBox.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.heightBox.Margin = new System.Windows.Forms.Padding(51, 5, 5, 0);
-            this.heightBox.Name = "heightBox";
-            this.heightBox.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.heightBox.Size = new System.Drawing.Size(75, 23);
-            // 
-            // widthLabel
-            // 
-            this.widthLabel.AutoSize = false;
-            this.widthLabel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.widthLabel.Margin = new System.Windows.Forms.Padding(5, 5, 5, 0);
-            this.widthLabel.Name = "widthLabel";
-            this.widthLabel.Size = new System.Drawing.Size(23, 23);
-            this.widthLabel.Text = "W";
-            this.widthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // heightLabel
-            // 
-            this.heightLabel.AutoSize = false;
-            this.heightLabel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.heightLabel.Margin = new System.Windows.Forms.Padding(5, 5, 5, 0);
-            this.heightLabel.Name = "heightLabel";
-            this.heightLabel.Size = new System.Drawing.Size(23, 23);
-            this.heightLabel.Text = "H";
-            this.heightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ResizeForm
             // 

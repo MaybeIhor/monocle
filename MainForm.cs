@@ -375,8 +375,11 @@ namespace Image_View
                             g.DrawImage(sourceImage, 0, 0, dialog.NewWidth, dialog.NewHeight);
                         }
 
-                        DisposeImage(ref originalImage);
-                        originalImage = pictureBox.Image;
+                        if (originalImage == null)
+                            originalImage = pictureBox.Image;
+                        else
+                            pictureBox.Image?.Dispose();
+
                         pictureBox.Image = resizedImage;
                         pictureBox.ResetCrop();
                         UpdateTitle();
