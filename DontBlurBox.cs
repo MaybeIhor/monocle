@@ -246,11 +246,11 @@ namespace Image_View
 
         private Point SnapToPixel(Point screenPoint)
         {
-            double pixelX = (screenPoint.X - imageRect.X) / scale + 1;
-            double pixelY = (screenPoint.Y - imageRect.Y) / scale + 1;
+            double pixelX = (screenPoint.X - imageRect.X) / scale;
+            double pixelY = (screenPoint.Y - imageRect.Y) / scale;
 
-            int snappedPixelX = (int)Math.Floor(pixelX);
-            int snappedPixelY = (int)Math.Floor(pixelY);
+            int snappedPixelX = (int)Math.Round(pixelX);
+            int snappedPixelY = (int)Math.Round(pixelY);
 
             return new Point(
                 imageRect.X + (int)Math.Round(snappedPixelX * scale),
@@ -285,10 +285,10 @@ namespace Image_View
 
         private void ApplyCrop()
         {
-            int x1 = (int)Math.Floor((p1.X - imageRect.X) / scale);
-            int y1 = (int)Math.Floor((p1.Y - imageRect.Y) / scale);
-            int x2 = (int)Math.Floor((p2.X - imageRect.X) / scale);
-            int y2 = (int)Math.Floor((p2.Y - imageRect.Y) / scale);
+            int x1 = (int)Math.Round((p1.X - imageRect.X) / scale);
+            int y1 = (int)Math.Round((p1.Y - imageRect.Y) / scale);
+            int x2 = (int)Math.Round((p2.X - imageRect.X) / scale);
+            int y2 = (int)Math.Round((p2.Y - imageRect.Y) / scale);
 
             if (crop.HasValue)
             {

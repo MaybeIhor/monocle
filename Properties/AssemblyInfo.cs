@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Monocle")]
+[assembly: AssemblyTitle("Lorgnette")]
 [assembly: AssemblyDescription("Image view program")]
-[assembly: AssemblyProduct("Monocle")]
+[assembly: AssemblyProduct("Lorgnette")]
 [assembly: AssemblyCompany("Postihor")]
 [assembly: AssemblyCopyright("Copyright © 2024")]
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.6")]
-[assembly: AssemblyFileVersion("1.0.6")]
+[assembly: AssemblyVersion("1.0.7")]
+[assembly: AssemblyFileVersion("1.0.7")]

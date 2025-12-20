@@ -213,6 +213,8 @@ namespace Image_View
                             imageToSave.Save(dialog.FileName, ImageFormat.Bmp);
                         else
                             imageToSave.Save(dialog.FileName);
+                        currentFileName = dialog.FileName;
+                        UpdateTitle();
                     }
                 }
                 catch { }
